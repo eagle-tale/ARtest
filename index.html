@@ -3,6 +3,8 @@
 
 <head>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://rawgit.com/rdub80/aframe-gui/master/dist/aframe-gui.min.js"></script>
+
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
     <script
@@ -12,20 +14,80 @@
 </head>
 
 <body style="margin: 0; overflow: hidden;">
-    <a-scene vr-mode-ui="enabled: false;" loading-screen="enabled: false;" renderer="logarithmicDepthBuffer: true;"
-        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;" id="scene" embedded gesture-detector>
+    <a-scene portal livestream landing-page xrextras-loading xrextras-runtime-error xrextras-tap-recenter xrweb>
+        <!-- We can define assets here to be loaded when A-Frame initializes -->
         <a-assets>
-            <a-asset-item id="animated-asset" src="assets/asset.gltf"></a-asset-item>
+            <img id="field" src="./assets/field.jpg" />
+            <!-- 追加 -->
+            <video id="video" muted autoplay crossorigin="anonymous"></video>
+            <img id="posx" src="./assets/cubemap/posx.png" />
+            <img id="posy" src="./assets/cubemap/posy.png" />
+            <img id="posz" src="./assets/cubemap/posz.png" />
+            <img id="negx" src="./assets/cubemap/negx.png" />
+            <img id="negy" src="./assets/cubemap/negy.png" />
+            <img id="negz" src="./assets/cubemap/negz.png" />
         </a-assets>
 
-        <a-marker id="animated-marker" type="pattern" preset="custom" url="assets/marker.patt"
-            raycaster="objects: .clickable" emitevents="true" cursor="fuse: false; rayOrigin: mouse;" id="markerA">
-            <a-entity id="bowser-model" scale="0.5055345587129072 0.5055345587129072 0.5055345587129072"
-                animation-mixer="loop: repeat" gltf-model="#animated-asset" class="clickable"
-                gesture-handler></a-entity>
-        </a-marker>
+        <a-camera id="camera" position="0 5 8"></a-camera>
 
-        <a-entity camera></a-entity>
+        <!-- Doorway 
+  scale属性によって、幅は1、高さは6、奥行きは1と設定されています。
+  position属性によって、ドアの位置が指定されています。
+  color属性によって、ドアの色が指定されています。-->
+        <a-box scale="1 12 1" position="-2.5 3 0" color="#8083A2"></a-box>
+        <a-box scale="1 12 1" position="2.5 3 0" color="#8083A2"></a-box>
+        <a-box scale="6 1 1" position="0 9 0" color="#8083A2"></a-box>
+
+        <!-- Hider walls -->
+        <a-entity id="hider-walls">
+            <a-box scale="6 100 1" position="0 57 0" xrextras-hider-material></a-box>
+            <a-box scale="94 100 1" position="-50 50 0" xrextras-hider-material></a-box>
+            <a-box scale="94 100 1" position="50 50 0" xrextras-hider-material></a-box>
+            <a-box scale="200 100 1" position="0 50 200" xrextras-hider-material></a-box>
+            <a-box scale="200 1 201" position="0 100 100" xrextras-hider-material></a-box>
+            <a-box scale="200 1 199" position="0 -0.5 100" xrextras-hider-material></a-box>
+            <a-box scale="1 100 200" position="-100 50 100" xrextras-hider-material></a-box>
+            <a-box scale="1 100 200" position="100 50 100" xrextras-hider-material></a-box>
+        </a-entity>
+
+        <a-entity id="portal-wall">
+            <a-plane scale="4 6 1" rotation="180 0 0" position="0 3 0.5" xrextras-hider-material></a-plane>
+        </a-entity>
+
+        <!-- <a-entity
+      light="
+        type: directional;
+        intensity: 0.8;
+        castShadow: true;
+        shadowMapHeight:2048;
+        shadowMapWidth:2048;
+        shadowCameraTop: 10;
+        target: #ball;"
+      position="1 4.3 2.5"
+      xrextras-attach="target: ball; offset: 0 15 0;"
+      shadow
+    > -->
+
+        </a-entity>
+        <a-entity light="type: ambient; intensity: 0.65;"></a-entity>
+
+        <a-entity id="portal-contents">
+            <!-- <a-entity
+        id="ball"
+        scale="5 5 5"
+        position="0 1.5 -7"
+        gltf-model="#ballModel"
+        cubemap-static
+        bob
+        shadow>
+      </a-entity> -->
+
+            <a-sky rotation="0 -90 0" src="#cave"></a-sky>
+            <!-- 追加(鷲尾): この部分のsrcがポータルの中の背景になる -->
+            <!-- <a-sky rotation="0 -90 0" src="#video"></a-sky> -->
+
+            <a-box scale="5 1 10" position="0 -0.5 -4.5" color="#8083A2" shadow></a-box>
+        </a-entity>
     </a-scene>
 </body>
 
